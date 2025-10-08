@@ -19,6 +19,7 @@
   "homepage": "https://github.com/BrunaLuisaCRS/PokeCardBay#readme",
   "dependencies": {
     "@vinejs/vine": "^3.0.1",
+    "dotenv": "^17.2.3",
     "edge.js": "^6.3.0"
   }
 }
