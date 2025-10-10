@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <title>PokeCardBay</title>
 </head>
@@ -16,15 +17,16 @@
 
         <div class="form-login">
 
-            <form action="#"> <!-- # pq n sabemos a ação do back ainda-->
+            <form method="post" action="http://localhost:8000"> <!-- # pq n sabemos a ação do back ainda-->
                 <div class="form-heather">
                     <div class="title">
                         <h1> Cadastre-se </h1>
                     </div>
 
-                    <div class="login-button">
-                        <button>
-                            <a href="#">Login</a>
+                    <div id="login-button">
+                        <button type="button">
+                            Login
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i>
                         </button>
                     </div>
                 </div>
@@ -32,26 +34,42 @@
 
             </form>
 
-            <div class="imput-group">
+            <form action="" id="imput-group">
 
                 <div class="imput-box">
                     <label for="firstname">Nome</label>
-                    <input id="firstname" type="text" placeholder="Digite seu nome" required></input>
+                    <input id="firstname" name="name" type="text"
+                        class="form-control" placeholder="Digite seu nome" required></input>
+                    <i class="fa-solid fa-user"></i>
+                    
                 </div>
                 <div class="imput-box">
-                    <label for="user-mail">Email</label>
-                    <input id="user-mail" type="text" placeholder="Digite seu email" required></input>
+                    <label for="email" class="form-label">E-mail</label>
+                    <input id="email" name="email" type="email"
+                        class="form-control" placeholder="Digite seu email" required></input>
+                    <i class="fa-regular fa-envelope"></i>
+                    
                 </div>
                 <div class="imput-box">
                     <label for="password">Senha</label>
-                    <input id="password" type="text" placeholder="Crie uma senha" required></input>
+                    <input id="password" name="password" type="text" 
+                        class="form-control" placeholder="**********" required></input>
+                    <i class="fa-regular fa-eye-slash"></i>
                 </div>
                 <div class="imput-box">
                     <label for="password">Confirmar Senha</label>
-                    <input id="password" type="text" placeholder="Confirme a senha" required></input>
+                    <input id="password" name="password"type="text" 
+                        class="form-control" placeholder="**********" required></input>
+                    <i class="fa-regular fa-eye-slash"></i>
                 </div>
                 
-            </div>
+                <div>
+                    <button type="submit" class="buttonsmit">
+                        Criar conta 
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+            </form>
 
         </div>
     </div>
