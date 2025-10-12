@@ -84,6 +84,7 @@ body {
   align-items: center;
   gap: 8px;
   transition: background-color 0.25s ease;
+  cursor: pointer;
 }
 
 #login-button button:hover {
