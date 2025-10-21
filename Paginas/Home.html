@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+    <script type="module" src="./index.js"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <title>PokeCardBay</title>
+</head>
+<body class="home">
+
+    <div class="page-container">
+
+        <!-- HEADER -->
+        <header class="heather">
+            <div class="logo">
+                <img src="https://media.criticalhit.net/2017/01/Pokemon-Hearthstone-header.jpg" alt="Banner Pokémon">
+            </div>
+
+            <nav class="menu">
+                <ul>
+                <li>
+                    <button title="Filtros"><i class="fa-solid fa-filter"></i></button>
+                </li>
+                <li>
+                    <button title="Carrinho"><i class="fa-solid fa-cart-shopping"></i></button>
+                </li>
+                <li>
+                    <button title="Home"><i class="fa-regular fa-house"></i></button>
+                </li>
+                <li>
+                    <button title="Perfil"><i class="fa-regular fa-circle-user"></i></button>
+                </li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- SHOWCASE DE CARTAS -->
+        <section class="showcase">
+        <h2>Cartas em Destaque</h2>
+
+        <div class="swiper">
+            <div class="swiper-wrapper">
+            <!-- Slide 1 -->
+                <div class="swiper-slide card">
+                <img src="https://assets.pokemon.com/static-assets/content-assets/cms2/img/cards/web/SM11/SM11_EN_72.png" alt="Carta Reuniclus">
+                <h3>Espeon GX</h3>
+                <p>R$ 154,80</p>
+                <button>Comprar</button>
+            </div>
+            <!-- Slide 2 -->
+            <div class="swiper-slide card">
+                <img src="https://assets.pokemon.com/static-assets/content-assets/cms2/img/cards/web/SV05/SV05_EN_171.png" alt="Carta Reuniclus">
+                <h3>Reuniclus</h3>
+                <p>R$ 54,80</p>
+                <button>Comprar</button>
+            </div>
+            <!-- Slide 3 -->
+            <div class="swiper-slide card">
+                <img src="https://assets.pokemon.com/static-assets/content-assets/cms2/img/cards/web/SMP/SMP_EN_SM240.png" alt="Carta Espeon">
+                <h3>Espeon GX</h3>
+                <p>R$ 120,00</p>
+                <button>Comprar</button>
+            </div>
+            <!-- Slide 4 -->
+            <div class="swiper-slide card">
+                <img src="https://copag.com.br/uploads/tinymce/c_SWSH11-234-1.png" alt="Carta Pikachu">
+                <h3>Pikachu VMax</h3>
+                <p>R$ 170,75</p>
+                <button>Comprar</button>
+            </div>
+            <!-- Slide 5 -->
+            <div class="swiper-slide card">
+                <img src="https://assets.pokemon.com/static-assets/content-assets/cms2/img/cards/web/SM9/SM9_EN_165.png" alt="Carta Gengar">
+                <h3>Gengar GX</h3>
+                <p>R$ 2000,00</p>
+                <button>Comprar</button>
+            </div>
+         
+            </div>
+
+            <!-- Botões de navegação -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+
+            <!-- Paginação -->
+            <div class="swiper-pagination"></div>
+        </div>
+        </section>
+
+        
+        <!-- FOOTER -->
+        <footer class="footer">
+            <p>&copy; 2025 PokeCardBay. Todos os direitos reservados.</p>
+        </footer>
+
+    </div>
+        <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+    const swiper = new Swiper(".swiper", {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        loop: true,
+        slidesPerGroup:1,
+        navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+        },
+        pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+        },
+        breakpoints: {
+        640: { slidesPerView: 2, spaceBetween: 15 },
+        900: { slidesPerView: 3, spaceBetween: 20 },
+        1200: { slidesPerView: 4, spaceBetween: 25 },
+        }
+    });
+    </script>
+
+
+
+</body>
+</html>
