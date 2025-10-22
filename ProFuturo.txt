@@ -4,10 +4,12 @@
 
 - Adicionar a api do pokemon tcg(seeds)
 
-- Adicionar metodos de login e cadastro automáticos do google 
-
 - Adicionar cookies
 
 - Adicionar os filtros
 
-- Fazer Paginação
+- Fazer Paginação de pesquisa
+
+- polir o html e css
+
+- Adicionar metodos de login e cadastro automáticos do google 

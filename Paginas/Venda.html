@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <title>PokeCardBay</title>
+    
+    <style>
+        /* Ajuste simples para o select e file input parecerem com os inputs */
+        .imput-box select,
+        .imput-box input[type="file"] {
+            padding: 10px 12px 10px 36px !important;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+            width: 100%;
+            font-family: "Poppins", sans-serif;
+            color: #555;
+            background-color: white;
+            appearance: none; /* Remove seta padrão */
+        }
+        .imput-box input[type="file"] {
+            padding-top: 8px; /* Ajuste fino para o file input */
+        }
+    </style>
+</head>
+
+<body class="cadastro"> 
+
+    <div class="container">
+
+        <div class="form-img">
+            <img src="" alt="Verso de uma carta Pokémon">
+        </div>
+
+        <div class="form-cadastro"> <div class="form-heather-cadastro">
+                <h1>Anunciar Carta</h1>
+                <a href="" id="login-button">
+                    <button>
+                        <i class="fas fa-home"></i> Voltar
+                    </button>
+                </a>
+            </div>
+
+            <form action="/processar-venda" method="POST" enctype="multipart/form-data">
+                <div id="imput-group">
+                    
+                    <div class="imput-box">
+                        <label for="nome">Nome da Carta</label>
+                        <i class="fa-solid fa-tag"></i>
+                        <input id="nome" type="text" name="nome" placeholder="Ex: Charizard VMAX" required>
+                    </div>
+
+                    <div class="imput-box">
+                        <label for="numero">Número da Carta</label>
+                        <i class="fa-solid fa-hashtag"></i>
+                        <input id="numero" type="text" name="numero" placeholder="Ex: 074/073" required>
+                    </div>
+
+                    <div class="imput-box">
+                        <label for="raridade">Tipo de Raridade</label>
+                        <i class="fa-solid fa-star"></i>
+                        <select id="raridade" name="raridade" required>
+                            <option value="" disabled selected>Selecione a raridade...</option>
+                            <option value="comum">Comum</option>
+                            <option value="incomum">Incomum</option>
+                            <option value="rara">Rara</option>
+                            <option value="holo">Rara Holográfica</option>
+                            <option value="ultra">Ultra Rara (V, VMAX, GX, EX)</option>
+                            <option value="secret">Secreta Rara</option>
+                            <option value="promo">Promo</option>
+                        </select>
+                    </div>
+
+                    <div class="imput-box">
+                        <label for="valor">Valor (R$)</label>
+                        <i class="fa-solid fa-dollar-sign"></i>
+                        <input id="valor" type="text" name="valor" placeholder="R$ 0,00" required>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="buttonsmit">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    Anunciar Carta
+                </button>
+            </form>
+        </div>
+        
+    </div>
+</body>
+</html>
