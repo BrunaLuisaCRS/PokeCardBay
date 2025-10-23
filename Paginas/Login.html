@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <script type="module" src="./index.js"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <title>PokeCardBay</title>
+</head>
+<body class="login">
+    <div class="container">
+
+        <!-- Formulário de login à esquerda -->
+        <div class="form-login">
+            <form method="post" action="http://localhost:8000">
+                <div class="form-heather-login">
+                    <h1>Login</h1>
+                </div>
+
+                <div id="imput-group">
+                    <div class="imput-box">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input id="email" name="email" type="email"
+                            class="form-control" placeholder="Digite seu email" autocomplete="email" required>
+                        <i class="fa-regular fa-envelope"></i>
+                    </div>
+                    <div class="imput-box">
+                        <label for="password">Senha</label>
+                        <input id="password" name="password" type="password" 
+                            class="form-control" placeholder="**********" autocomplete="off" required>
+                        <i class="fa-regular fa-eye-slash"></i>
+                    </div>
+                    
+                    <div>
+                        <button type="submit" class="buttonsmit">
+                            Entrar
+                        </button>
+                    </div>
+                    <div class="ancora-msg"> 
+                        <a href="Cadastro.html">
+                        Ainda não tem uma conta? Cadastre-se!
+                        </a>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <!-- Imagem do login à direita -->
+        <div class="login-img">
+            <img src="../assets/img/caution_piachu.webp" alt="Login Image">
+        </div>
+
+    </div>
+</body>
+</html>

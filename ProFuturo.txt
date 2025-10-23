@@ -1,0 +1,15 @@
+- Colocar o JS pra funcionar
+
+- Adicionar o BD e linkar as infos
+
+- Adicionar a api do pokemon tcg(seeds)
+
+- Adicionar cookies
+
+- Adicionar os filtros
+
+- Fazer Paginação de pesquisa
+
+- polir o html e css
+
+- Adicionar metodos de login e cadastro automáticos do google 
