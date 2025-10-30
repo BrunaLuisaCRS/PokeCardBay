@@ -21,3 +21,6 @@ server.listen(PORT, HOST, ()=> {
     console.log('Servidor iniciado');
 })
 
+
+
+startServer().catch(console.error)
