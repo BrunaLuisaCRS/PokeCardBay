@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <title>PokeCardBay - Cadastro</title>
+</head>
+<body class="cadastro">
+  <div class="container">
+
+    <div class="form-img">
+      <img src="../assets/img/proibido_pikachu.webp" alt="Pikachu proibido">
+    </div>
+
+    <div class="form-cadastro">
+
+      <!-- Cabeçalho -->
+      <div class="form-heather-cadastro">
+        <div class="title">
+          <h1>Cadastre-se</h1>
+        </div>
+
+        <div id="login-button" onclick="window.location.href='/login'">
+          <button type="button">
+            Login
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Formulário de cadastro -->
+      <form method="POST" action="/users" id="imput-group">
+        <div class="imput-box">
+          <label for="firstname">Nome</label>
+          <input id="firstname" name="full_name" type="text"
+                 class="form-control" placeholder="Digite seu nome"
+                 autocomplete="name" required>
+          <i class="fa-solid fa-user"></i>
+        </div>
+
+        <div class="imput-box">
+          <label for="email" class="form-label">E-mail</label>
+          <input id="email" name="email" type="email"
+                 class="form-control" placeholder="Digite seu email"
+                 autocomplete="email" required>
+          <i class="fa-regular fa-envelope"></i>
+        </div>
+
+        <div class="imput-box">
+          <label for="password">Senha</label>
+          <input id="password" name="password" type="password"
+                 class="form-control" placeholder="**********"
+                 autocomplete="off" required>
+          <i class="fa-regular fa-eye-slash"></i>
+        </div>
+
+        <div class="imput-box">
+          <label for="confpassword">Confirmar Senha</label>
+          <input id="confpassword" name="confirmpassword" type="password"
+                 class="form-control" placeholder="**********"
+                 autocomplete="off" required>
+          <i class="fa-regular fa-eye-slash"></i>
+        </div>
+
+        <div>
+          <button type="submit" class="buttonsmit">
+            Criar conta
+            <i class="fa-solid fa-check"></i>
+          </button>
+        </div>
+      </form>
+
+      <!-- Exibir mensagens de erro (se o controller mandar algo) -->
+      @if(error)
+        <p style="color:red;">{{ error }}</p>
+      @endif
+
+    </div>
+  </div>
+</body>
+</html>

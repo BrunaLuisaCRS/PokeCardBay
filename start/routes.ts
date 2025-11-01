@@ -6,7 +6,7 @@
 | The routes file is used for defining the HTTP routes.
 |
 */
-import { HttpContext } from '@adonisjs/core/http'
+/*import { HttpContext } from '@adonisjs/core/http'
 import router from '@adonisjs/core/services/router'
 
 const users = [
@@ -34,4 +34,13 @@ router.get('/users/:id', async ({ response, params }: HttpContext) => {
 router.post('/users', ({ request }: HttpContext) => {
     console.log(request.body())
     return users
+})*/
+
+import router from '@adonisjs/core/services/router'
+
+router.get('/cadastro', async ({ view }) => {
+  return view.render('cadastro') // seu arquivo resources/views/cadastro.edge
 })
+
+router.get('/users', [() => import('#controllers/users_controller'), 'index'])
+router.post('/users', [() => import('#controllers/users_controller'), 'store'])
