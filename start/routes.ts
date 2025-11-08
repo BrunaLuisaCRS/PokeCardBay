@@ -18,6 +18,8 @@ router.get('/login', async ({ view }) => {
   return view.render('login')
 })
 
+
+
 router.post('/login', [() => import('#controllers/auth_controller'), 'login'])
 
 

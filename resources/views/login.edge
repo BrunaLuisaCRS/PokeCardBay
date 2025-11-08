@@ -18,6 +18,18 @@
           <h1>Login</h1>
         </div>
 
+         <!-- Bloco de Erros (do Controller) -->
+        @if(flashMessages.has('errors'))
+          <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+            <strong>Ops!</strong>
+            <ul>
+              @each(error in flashMessages.get('errors'))
+                <li>{{ error.message }}</li>
+              @endeach
+            </ul>
+          </div>
+        @endif
+
         <div id="imput-group">
           <div class="imput-box">
             <label for="email" class="form-label">E-mail</label>
