@@ -12,7 +12,8 @@
   <div class="container">
 
     <div class="form-img">
-      <img src="../assets/img/proibido_pikachu.webp" alt="Pikachu proibido">
+      <!-- Se a imagem estiver na pasta 'public/assets/img' -->
+      <img src="/assets/img/proibido_pikachu.webp" alt="Pikachu proibido">
     </div>
 
     <div class="form-cadastro">
@@ -22,7 +23,6 @@
         <div class="title">
           <h1>Cadastre-se</h1>
         </div>
-
         <div id="login-button" onclick="window.location.href='/login'">
           <button type="button">
             Login
@@ -31,13 +31,31 @@
         </div>
       </div>
 
+      <!-- 
+        MOSTRAR ERROS DE VALIDAÇÃO GLOBAIS 
+      -->
+      @if(flashMessages.has('errors'))
+        <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+          <strong>Ops! Verifique os erros abaixo:</strong>
+          <ul>
+            @each(error in flashMessages.get('errors'))
+              <li>{{ error.message }}</li>
+            @endeach
+          </ul>
+        </div>
+      @endif
+
       <!-- Formulário de cadastro -->
+      <!-- O action="/users" está CORRETO -->
       <form method="POST" action="/users" id="imput-group">
+        {{ csrfField() }} <!-- Não se esqueça do CSRF token! -->
+        
         <div class="imput-box">
           <label for="firstname">Nome</label>
           <input id="firstname" name="full_name" type="text"
                  class="form-control" placeholder="Digite seu nome"
-                 autocomplete="name" required>
+                 autocomplete="name" required
+                 value="{{ flashMessages.get('full_name', '') }}"> <!-- Repopula o valor antigo -->
           <i class="fa-solid fa-user"></i>
         </div>
 
@@ -45,7 +63,8 @@
           <label for="email" class="form-label">E-mail</label>
           <input id="email" name="email" type="email"
                  class="form-control" placeholder="Digite seu email"
-                 autocomplete="email" required>
+                 autocomplete="email" required
+                 value="{{ flashMessages.get('email', '') }}"> <!-- Repopula o valor antigo -->
           <i class="fa-regular fa-envelope"></i>
         </div>
 
@@ -58,6 +77,10 @@
         </div>
 
         <div class="imput-box">
+          <!-- 
+            MUDANÇA IMPORTANTE: Voltamos ao seu nome original
+            para não afetar o CSS. O validador foi ajustado.
+          -->
           <label for="confpassword">Confirmar Senha</label>
           <input id="confpassword" name="confirmpassword" type="password"
                  class="form-control" placeholder="**********"
@@ -72,11 +95,6 @@
           </button>
         </div>
       </form>
-
-      <!-- Exibir mensagens de erro (se o controller mandar algo) -->
-      @if(error)
-        <p style="color:red;">{{ error }}</p>
-      @endif
 
     </div>
   </div>

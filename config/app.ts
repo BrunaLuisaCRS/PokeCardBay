@@ -38,3 +38,4 @@ export const http = defineConfig({
     sameSite: 'lax',
   },
 })
+

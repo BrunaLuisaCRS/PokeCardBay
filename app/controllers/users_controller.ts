@@ -22,6 +22,6 @@ export default class UsersController {
     }
 
     await User.create(data)
-    return response.redirect('/users')
+    return response.redirect('/login')
   }
 }
