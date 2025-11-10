@@ -4,29 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    <script src="index.js"></script>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <title>PokeCardBay</title>
+    <title>PokeCardBay - Vender</title>
     
     <style>
-        /* Ajuste simples para o select e file input parecerem com os inputs */
         .imput-box select,
-        .imput-box input[type="file"] {
+        .imput-box input[type="file"],
+        .imput-box input[readonly] {
             padding: 10px 12px 10px 36px !important;
             border: 1px solid #ccc;
             border-radius: 8px;
             font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.2s ease;
             width: 100%;
             font-family: "Poppins", sans-serif;
             color: #555;
-            background-color: white;
-            appearance: none; /* Remove seta padrão */
+            background-color: #f9f9f9;
+            appearance: none;
         }
-        .imput-box input[type="file"] {
-            padding-top: 8px; /* Ajuste fino para o file input */
+
+        /* ÍCONE COMO BOTÃO */
+        .imput-box i {
+            position: absolute;
+            left: 10px; top: 36px;
+            color: #aaa;
+            cursor: pointer; /* Mãozinha */
+            z-index: 10;
+            padding: 5px; /* Área de clique maior */
         }
+        .imput-box i:hover { color: #a005be; }
+
+        /* LISTA DE SUGESTÕES */
+        .suggestions-box {
+            position: absolute;
+            top: 100%; left: 0; width: 100%;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .suggestion-item:hover { background-color: #f0f0f0; }
+        .suggestion-thumb { width: 40px; height: auto; border-radius: 4px; }
+        .suggestion-text { display: flex; flex-direction: column; font-size: 0.85rem; }
     </style>
 </head>
 
@@ -35,50 +68,48 @@
     <div class="container">
 
         <div class="form-img">
-            <img src="" alt="Verso de uma carta Pokémon">
+            <img id="card-preview" src="https://images.pokemontcg.io/swsh1/1_hires.png" alt="Prévia">
         </div>
 
-        <div class="form-cadastro"> <div class="form-heather-cadastro">
+        <div class="form-cadastro"> 
+            <div class="form-heather-cadastro">
                 <h1>Anunciar Carta</h1>
-                    <button onclick="window.location.href='/'" class="button">
-                        <i class="fas fa-home"></i> Voltar
-                    </button>
+                <button onclick="window.location.href='/'" class="button">
+                    <i class="fas fa-home"></i> Voltar
+                </button>
             </div>
 
-            <form action="/processar-venda" method="POST" enctype="multipart/form-data">
+            <form action="/vender" method="POST">
+                {{ csrfField() }}
+                
+                <input type="hidden" name="card_api_id" id="api_id"> 
+                <input type="hidden" name="card_image" id="image_url">
+
                 <div id="imput-group">
                     
                     <div class="imput-box">
-                        <label for="nome">Nome da Carta</label>
-                        <i class="fa-solid fa-tag"></i>
-                        <input id="nome" type="text" name="nome" placeholder="Ex: Charizard VMAX" required>
+                        <label for="card_name">Nome da Carta</label>
+                        <i class="fa-solid fa-search" id="search-btn" title="Clique para buscar"></i>
+                        <input id="card_name" type="text" name="card_name" placeholder="Digite e aperte Enter ou clique na lupa" required autocomplete="off">
+                        <div id="suggestions" class="suggestions-box"></div>
                     </div>
 
                     <div class="imput-box">
-                        <label for="numero">Número da Carta</label>
+                        <label for="numero_visual">Número</label>
                         <i class="fa-solid fa-hashtag"></i>
-                        <input id="numero" type="text" name="numero" placeholder="Ex: 074/073" required>
+                        <input id="numero_visual" type="text" placeholder="--/--" readonly>
                     </div>
 
                     <div class="imput-box">
-                        <label for="raridade">Tipo de Raridade</label>
+                        <label for="card_rarity">Raridade</label>
                         <i class="fa-solid fa-star"></i>
-                        <select id="raridade" name="raridade" required>
-                            <option value="" disabled selected>Selecione a raridade...</option>
-                            <option value="comum">Comum</option>
-                            <option value="incomum">Incomum</option>
-                            <option value="rara">Rara</option>
-                            <option value="holo">Rara Holográfica</option>
-                            <option value="ultra">Ultra Rara (V, VMAX, GX, EX)</option>
-                            <option value="secret">Secreta Rara</option>
-                            <option value="promo">Promo</option>
-                        </select>
+                        <input id="card_rarity" type="text" name="card_rarity" placeholder="Automático..." readonly required>
                     </div>
 
                     <div class="imput-box">
-                        <label for="valor">Valor (R$)</label>
+                        <label for="price">Valor (R$)</label>
                         <i class="fa-solid fa-dollar-sign"></i>
-                        <input id="valor" type="text" name="valor" placeholder="R$ 0,00" required>
+                        <input id="price" type="text" name="price" placeholder="R$ 0,00" required>
                     </div>
 
                 </div>
@@ -91,5 +122,116 @@
         </div>
         
     </div>
+
+    <script>
+        const nameInput = document.getElementById('card_name');
+        const searchBtn = document.getElementById('search-btn'); // Botão Lupa
+        const suggestionsBox = document.getElementById('suggestions');
+        const imgPreview = document.getElementById('card-preview');
+        const numberDisplay = document.getElementById('numero_visual');
+        const rarityInput = document.getElementById('card_rarity');
+        const apiIdInput = document.getElementById('api_id');
+        const imageUrlInput = document.getElementById('image_url');
+
+        // FUNÇÃO DE BUSCA
+        async function performSearch() {
+            const query = nameInput.value.trim();
+
+            if (!query) {
+                alert("Digite o nome da carta primeiro.");
+                return;
+            }
+
+            suggestionsBox.innerHTML = '<div style="padding:10px; color:#666;">Buscando...</div>';
+            suggestionsBox.style.display = 'block';
+
+            try {
+                const response = await fetch(`/api/market/autocomplete?q=${query}`);
+                
+                // Tratamento de Erros Específicos
+                if (response.status === 429) {
+                    suggestionsBox.innerHTML = '<div style="padding:10px; color:orange;">Muitas tentativas. Aguarde...</div>';
+                    return;
+                }
+                if (response.status === 503 || response.status === 504) {
+                    suggestionsBox.innerHTML = '<div style="padding:10px; color:red;">Sistema do Pokémon TCG fora do ar.</div>';
+                    return;
+                }
+
+                const cards = await response.json();
+                renderSuggestions(cards);
+
+            } catch (error) {
+                console.error("Erro na busca:", error);
+                suggestionsBox.innerHTML = '<div style="padding:10px; color:red;">Erro ao buscar. Tente novamente.</div>';
+            }
+        }
+
+        // 1. EVENTO: CLIQUE NA LUPA
+        searchBtn.addEventListener('click', function() {
+            performSearch();
+        });
+
+        // 2. EVENTO: APERTAR ENTER
+        nameInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Impede enviar o formulário
+                performSearch();
+            }
+        });
+        
+        // (REMOVIDO O EVENTO 'INPUT' PARA NÃO BUSCAR DIGITANDO)
+
+        // RENDERIZA A LISTA
+        function renderSuggestions(cards) {
+            suggestionsBox.innerHTML = '';
+            
+            if (!cards || cards.length === 0) {
+                suggestionsBox.innerHTML = '<div style="padding:10px;">Nenhuma carta encontrada.</div>';
+                return;
+            }
+
+            cards.forEach(card => {
+                const div = document.createElement('div');
+                div.classList.add('suggestion-item');
+                
+                div.innerHTML = `
+                    <img src="${card.image}" class="suggestion-thumb" alt="${card.name}">
+                    <div class="suggestion-text">
+                        <strong>${card.name}</strong>
+                        <span>Num: ${card.number} | ${card.rarity}</span>
+                    </div>
+                `;
+
+                div.addEventListener('click', () => {
+                    selectCard(card);
+                });
+
+                suggestionsBox.appendChild(div);
+            });
+            suggestionsBox.style.display = 'block';
+        }
+
+        // SELECIONA A CARTA
+        function selectCard(card) {
+            nameInput.value = card.name;
+            numberDisplay.value = card.number;
+            rarityInput.value = card.rarity || 'Comum'; 
+
+            apiIdInput.value = card.id;
+            imageUrlInput.value = card.image;
+            imgPreview.src = card.image;
+
+            suggestionsBox.style.display = 'none';
+        }
+
+        // Fecha lista ao clicar fora
+        document.addEventListener('click', (e) => {
+            // Se clicar fora do input, da lista e DO BOTÃO DA LUPA
+            if (!nameInput.contains(e.target) && !suggestionsBox.contains(e.target) && !searchBtn.contains(e.target)) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>

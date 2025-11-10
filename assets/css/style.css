@@ -799,3 +799,19 @@ main.cart-container h2 {
     width: 90%;
   }
 }
+
+/* Adicione/Substitua isso no seu CSS interno */
+.imput-box i {
+    position: absolute;
+    left: 10px; 
+    top: 36px;
+    color: #aaa;
+    /* NOVAS PROPRIEDADES PARA TORNAR O ÍCONE UM BOTÃO */
+    cursor: pointer; 
+    z-index: 10; /* Garante que fique acima do input */
+    transition: color 0.2s;
+}
+
+.imput-box i:hover {
+    color: #a005be; /* Cor de destaque ao passar o mouse */
+}
