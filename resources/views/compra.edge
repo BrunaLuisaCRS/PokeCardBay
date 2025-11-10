@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <title>PokeCardBay</title>
+    
+    <style>
+    
+        .compra-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px; 
+        }
+        
+        .compra-layout {
+            display: flex;
+            flex-wrap: wrap; 
+            justify-content: space-between;
+            gap: 25px;
+            align-items: flex-start;
+        }
+
+        .checkout-form {
+            flex: 3;
+            min-width: 320px;
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .checkout-form h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .checkout-form #imput-group {
+            gap: 15px; 
+        }
+        .checkout-form .imput-box label {
+            margin-bottom: 4px; 
+        }
+        .checkout-form .imput-box i {
+            top: 32px; 
+        }
+
+        .compra-layout .cart-summary {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        @media (max-width: 900px) {
+            .compra-layout .cart-summary {
+                position: static;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="full">
+    <div class="page-container">
+        
+<div class="header">
+    <div class="logo">
+        <img src="https://media.criticalhit.net/2017/01/Pokemon-Hearthstone-header.jpg" alt="Logo da loja">
+    </div>
+    </div>
+
+<main class="compra-container">
+    <div class="compra-layout">
+
+        <section class="checkout-form">
+            
+            <form id="form-endereco">
+                <h2>Endereço de Entrega</h2>
+                <div id="imput-group">
+                    <div class="imput-box">
+                        <label for="cep">CEP</label>
+                        <i class="fa-solid fa-map-marker-alt"></i>
+                        <input id="cep" type="text" name="cep" placeholder="00000-000" required>
+                    </div>
+                    <div class="imput-box">
+                        <label for="rua">Rua / Logradouro</label>
+                        <i class="fa-solid fa-road"></i>
+                        <input id="rua" type="text" name="rua" placeholder="Rua dos Bobos" required>
+                    </div>
+                    <div style="display: flex; gap: 15px;">
+                        <div class="imput-box" style="flex: 1;">
+                            <label for="numero">Número</label>
+                            <i class="fa-solid fa-hashtag"></i>
+                            <input id="numero" type="text" name="numero" placeholder="Nº 0" required>
+                        </div>
+                        <div class="imput-box" style="flex: 2;">
+                            <label for="bairro">Bairro</label>
+                            <i class="fa-solid fa-signs-post"></i>
+                            <input id="bairro" type="text" name="bairro" required>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form id="form-pagamento">
+                <h2>Forma de Pagamento</h2>
+                <div id="imput-group">
+                    <div class="imput-box">
+                        <label for="nome-cartao">Nome no Cartão</label>
+                        <i class="fa-solid fa-user"></i>
+                        <input id="nome-cartao" type="text" name="nome-cartao" required>
+                    </div>
+                    <div class="imput-box">
+                        <label for="num-cartao">Número do Cartão</label>
+                        <i class="fa-solid fa-credit-card"></i>
+                        <input id="num-cartao" type="text" name="num-cartao" placeholder="0000 0000 0000 0000" required>
+                    </div>
+                    <div style="display: flex; gap: 15px;">
+                        <div class="imput-box" style="flex: 2;">
+                            <label for="validade">Validade</label>
+                            <i class="fa-solid fa-calendar-alt"></i>
+                            <input id="validade" type="text" name="validade" placeholder="MM/AA" required>
+                        </div>
+                        <div class="imput-box" style="flex: 1;">
+                            <label for="cvv">CVV</label>
+                            <i class="fa-solid fa-lock"></i>
+                            <input id="cvv" type="text" name="cvv" placeholder="123" required>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <aside class="cart-summary">
+            <h3>Resumo do Pedido</h3>
+            <div class="summary-item">
+                <span>Subtotal:</span>
+                <span>R$ 159,70</span>
+            </div>
+            <div class="summary-item">
+                <span>Frete:</span>
+                <span>R$ 10,00</span> </div>
+            <div class="summary-item total">
+                <span>Total:</span>
+                <span>R$ 169,70</span>
+            </div>
+            <button class="button" form="form-pagamento">
+                Confirmar Pagamento
+            </button>
+        </aside>
+
+    </div>
+        </main>
+    </div>
+</body>
+</html>

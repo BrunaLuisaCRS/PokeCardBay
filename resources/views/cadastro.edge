@@ -46,9 +46,9 @@
       @endif
 
       <!-- Formulário de cadastro -->
-      <!-- O action="/users" está CORRETO -->
-      <form method="POST" action="/users" id="imput-group">
-        {{ csrfField() }} <!-- Não se esqueça do CSRF token! -->
+ 
+      <form method="POST" action="/cadastro" id="imput-group">
+      {{ csrfField() }}
         
         <div class="imput-box">
           <label for="firstname">Nome</label>
@@ -82,7 +82,7 @@
             para não afetar o CSS. O validador foi ajustado.
           -->
           <label for="confpassword">Confirmar Senha</label>
-          <input id="confpassword" name="confirmpassword" type="password"
+          <input id="confpassword" name="password_confirmation" type="password"
                  class="form-control" placeholder="**********"
                  autocomplete="off" required>
           <i class="fa-regular fa-eye-slash"></i>

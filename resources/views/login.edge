@@ -6,14 +6,15 @@
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
   <link rel="stylesheet" href="../assets/css/style.css">
+
   <title>PokeCardBay - Login</title>
 </head>
 <body class="login">
   <div class="container">
 
-    <!-- Formulário de login à esquerda -->
     <div class="form-login">
-      <form method="POST" action="/login">
+      <form method="POST" action="/login"> 
+      {{ csrfField() }}
         <div class="form-heather-login">
           <h1>Login</h1>
         </div>
@@ -22,44 +23,40 @@
           <div class="imput-box">
             <label for="email" class="form-label">E-mail</label>
             <input id="email" name="email" type="email"
-                   class="form-control" placeholder="Digite seu email"
-                   autocomplete="email" required>
+                   class="form-control" placeholder="Digite seu email" autocomplete="email" required>
             <i class="fa-regular fa-envelope"></i>
           </div>
-
           <div class="imput-box">
             <label for="password">Senha</label>
-            <input id="password" name="password" type="password"
-                   class="form-control" placeholder="**********"
-                   autocomplete="off" required>
+            <input id="password" name="password" type="password" 
+                   class="form-control" placeholder="**********" autocomplete="off" required>
             <i class="fa-regular fa-eye-slash"></i>
           </div>
-
+          
           <div>
             <button type="submit" class="buttonsmit">
               Entrar
-              <i class="fa-solid fa-arrow-right-to-bracket"></i>
             </button>
           </div>
-
-          <div class="ancora-msg">
+          <div class="ancora-msg"> 
             <a href="/cadastro">
-              Ainda não tem uma conta? Cadastre-se!
+            Ainda não tem uma conta? Cadastre-se!
             </a>
           </div>
+
+          @if(flashMessages.has('error'))
+            <p style="color:red; margin-top: 15px; text-align: center;">
+              {{ flashMessages.get('error') }}
+            </p>
+          @endif
+
         </div>
       </form>
-
-      <!-- Mensagem de erro opcional -->
-      @if(error)
-        <p style="color:red;">{{ error }}</p>
-      @endif
     </div>
 
-    <!-- Imagem do login à direita -->
     <div class="login-img">
-      <img src="../assets/img/caution_piachu.webp" alt="Login Image">
-    </div>
+      <img src="/assets/img/caution_piachu.webp" alt="Login Image">
+      </div>
 
   </div>
 </body>
