@@ -19,6 +19,17 @@ router
     router.get('/', async ({ view }) => {
       return view.render('home') // Renderiza home.edge
     })
+
+    router.get('/meuCarrinho', async ({ view }) => {
+      return view.render('carrinho') // carrinho.edge
+    })
+    router.get('/compra', async ({ view }) => {
+      return view.render('compra') // compra.edge
+    })
+
+    router.get('/vender', async ({ view }) => {
+      return view.render('venda') // venda.edge
+    })
   })
   .use(middleware.guest()) // Opcional: redireciona logados para /meuPerfil
 
@@ -56,16 +67,11 @@ router.get('/meuPerfil', async ({ view, auth }) => {
     router.post('/logout', [() => import('#controllers/auth_controller'), 'logout']).as('logout')
     
     // Outras rotas logadas
-    router.get('/meuCarrinho', async ({ view }) => {
-      return view.render('carrinho') // carrinho.edge
-    })
-    router.get('/compra', async ({ view }) => {
-      return view.render('compra') // compra.edge
-    })
     
-    // Rota de usuários (exemplo)
+    
+    // Rota de usuários 
     router.get('/users', [() => import('#controllers/users_controller'), 'index'])
 
     router.get('/api/search', [() => import('#controllers/card_searches_controller'), 'search'])
   })
-  //.use(middleware.auth()) // <-- ISSO PROTEGE O GRUPO TODO!
+  //.use(middleware.auth()) //  ISSO PROTEGE O GRUPO TODO
