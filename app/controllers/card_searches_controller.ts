@@ -4,16 +4,14 @@ import env from '#start/env'
 export default class CardSearchesController { 
 
   public async search({ request, response }: HttpContext) {
-    // 'q' vem do input de Número (ex: 117)
+    // 'q' agora representa especificamente o NÚMERO da carta
     const cardNumber = request.input('q', '').trim()
-    // 'total' vem do input de Total (ex: 146)
+    
+    // Novo parâmetro opcional: Total do Set
     const setTotal = request.input('total', '').trim()
     
     const page = request.input('page', 1)
-    
-    // Paginação de 100 para garantir que encontramos a carta na lista,
-    // pois números baixos (ex: 1) existem em centenas de sets.
-    const pageSize = 100 
+    const pageSize = 100 // Mantemos 100 para garantir que apareça na lista
 
     if (!cardNumber) {
       return response.badRequest({ error: 'Número da carta é obrigatório.' })
@@ -24,37 +22,19 @@ export default class CardSearchesController {
       return response.internalServerError({ error: 'API Key não configurada.' })
     }
 
-    // --- 1. LÓGICA INTELIGENTE DE NÚMEROS ---
-    const numberQueries: string[] = []
+    // --- CONSTRUÇÃO DA QUERY COMPOSTA ---
     
-    // Busca Exata (ex: "117")
-    // Aspas são cruciais para a API tratar como string exata e não número parcial
-    numberQueries.push(`number:"${cardNumber}"`)
+    // 1. Busca Base: Sempre pelo número (Collector Number)
+    let query = `number:"${cardNumber}"`
 
-    // Se for numérico, adiciona variação com zero à esquerda (ex: "0117")
-    // A API às vezes guarda "117", às vezes "0117". Isso cobre ambos os casos.
-    if (/^\d+$/.test(cardNumber)) {
-        numberQueries.push(`number:"0${cardNumber}"`)
-    }
-
-    // Junta com OR: (number:"117" OR number:"0117")
-    const numberClause = `(${numberQueries.join(' OR ')})`
-
-    // --- 2. FILTRO DE TOTAL DO SET ---
-    let setClause = ''
+    // 2. Filtro Opcional: Se o usuário digitou o total (ex: 198), adicionamos à busca
+    // Na API, isso é o campo 'set.printedTotal'
     if (setTotal) {
-        // Se o total for fornecido, filtramos também por ele.
-        // Importante: set.printedTotal geralmente funciona melhor SEM aspas para números na API.
-        // Ex: set.printedTotal:146
-        setClause = ` set.printedTotal:${setTotal}`
+        query += ` set.printedTotal:"${setTotal}"`
     }
 
-    // --- 3. QUERY FINAL ---
-    // Exemplo: (number:"117" OR number:"0117") set.printedTotal:146
-    const query = `${numberClause}${setClause}`
-
-    // Monta URL
-    // orderBy=-set.releaseDate ordena do mais recente para o mais antigo
+    // Monta a URL
+    // orderBy=-set.releaseDate mostra os sets mais novos primeiro
     const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(query)}&pageSize=${pageSize}&page=${page}&orderBy=-set.releaseDate`
     
     console.log(`[API SEARCH] Query: ${query}`) 
@@ -65,7 +45,6 @@ export default class CardSearchesController {
         headers: { 'X-Api-Key': apiKey },
       })
 
-      // Se a API não encontrar nada (404), retornamos vazio em vez de erro
       if (apiResponse.status === 404) {
         return { data: [], totalCount: 0, count: 0, page: 1 }
       }
