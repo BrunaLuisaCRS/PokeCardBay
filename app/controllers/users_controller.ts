@@ -3,7 +3,6 @@ import User from '#models/user'
 // 1. Importe seu validador
 import { createUserValidator } from '#validators/user_validator' 
 // 2. Importe o serviço de hash
-//import hash from '@adonisjs/core/services/hash' 
 
 export default class UsersController {
   
@@ -14,28 +13,29 @@ export default class UsersController {
 
   public async store({ request, response, session }: HttpContext) {
     try {
-      // 1. Validar os dados (full_name, email, password)
+      // 1. Validar
       const data = await request.validateUsing(createUserValidator)
 
-      // 2. Criar o hash USANDO SCRYPT
-      //const hashedPassword = await hash.use('scrypt').make(data.password)
+      // --- ALTERAÇÃO AQUI ---
+      // NÃO FAÇA O HASH MANUALMENTE.
+      // Vamos testar se o Model faz isso sozinho.
+      
+      console.log('👀 Enviando senha CRUA para o User.create...')
 
-      // 3. Criar o usuário USANDO A SENHA HASHEADA
+      // 3. Criar usuário com a SENHA PURA
       await User.create({
         full_name: data.full_name,
         email: data.email,
-        password: data.password, // <-- senha pura, sem hash manual
-        //password: hashedPassword  // <-- PONTO CRÍTICO!
+        password: data.password // <--- Mande a senha original (12345678)
       })
 
       // 6. Deu tudo certo, redirecione para o login
       return response.redirect('/login')
     
     } catch (error) {
-      // 7. Se o validador falhar, ele joga um erro.
-      // Nós o pegamos aqui e redirecionamos de volta com os erros.
-      session.flashAll() // Repopula os campos (full_name, email)
-      session.flash('errors', error.messages) // Envia os erros de validação
+      // ... seu catch ...
+      session.flashAll()
+      session.flash('errors', error.messages)
       return response.redirect().back()
     }
   }
