@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    <script src="index.js"></script>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <title>PokeCardBay</title>
-    
+    <title>PokeCardBay - Perfil</title>
 </head>
 
 <body class="full">
@@ -17,71 +15,84 @@
             <div class="logo">
                 <img src="https://media.criticalhit.net/2017/01/Pokemon-Hearthstone-header.jpg" alt="Logo da loja">
             </div>
-            </div>
+        </div>
 
-        <main class="perfil-container"> <h2>
-                Minha Conta
-            </h2>
+        <main class="perfil-container">
+            <h2>Minha Conta</h2>
 
-            <div class="layout"> <section class="checkout-form"> <div class="perfil-info">
+            <div class="layout">
+                <section class="checkout-form">
+                    <div class="perfil-info">
                         <div class="perfil-avatar">
-                            <img src="https://i.pinimg.com/236x/65/72/3e/65723edbdc8e9113741475429e5845af.jpg" alt="Foto do Perfil">
-                            <button class="mudar-foto-btn"><i class="fas fa-camera"></i></button>
+                            <img src="{{ user.photoUrl || 'https://i.pinimg.com/236x/65/72/3e/65723edbdc8e9113741475429e5845af.jpg' }}" alt="Foto do Perfil">
                         </div>
-                        <h3>Ash Ketchum</h3>
-                        <p>ash.ketchum@pokemon.com</p>
+                        <h3>{{ user.full_name }}</h3>
+                        <p>{{ user.email }}</p>
                     </div>
+
                     <div class="infos-user">
+                        <!-- FORM DE ATUALIZAÇÃO DE PERFIL -->
+                        <form id="form-perfil" action="/perfil/update" method="POST" enctype="multipart/form-data">
+                            {{ csrfField() }}
+                            <h2 style="font-size: 1.5rem; margin-bottom: 15px;">Atualizar Perfil</h2>
+                            <div id="imput-group">
+                                <div class="imput-box">
+                                    <label for="full_name">Nome</label>
+                                    <i class="fas fa-user"></i>
+                                    <input id="full_name" type="text" name="full_name" value="{{ user.full_name }}">
+                                </div>
+                                <div class="imput-box">
+                                    <label for="photo">Foto de Perfil</label>
+                                    <i class="fas fa-camera"></i>
+                                    <input id="photo" type="file" name="photo" accept="image/*">
+                                </div>
+                                <button type="submit" class="buttonsmit">
+                                    <i class="fas fa-save"></i> Salvar Perfil
+                                </button>
+                            </div>
+                        </form>
 
-                    <div class="form-profile">
-                    <form id="form-senha">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 15px;">Alterar Senha</h2>
-                        <div id="imput-group">
-                            <div class="imput-box">
-                                <label for="senha-atual">Senha Atual</label>
-                                <i class="fas fa-lock"></i>
-                                <input id="senha-atual" type="password" name="senha-atual">
+                        <!-- FORM DE ALTERAÇÃO DE SENHA -->
+                        <form id="form-senha" action="/perfil/password" method="POST">
+                            {{ csrfField() }}
+                            <h2 style="font-size: 1.5rem; margin-bottom: 15px;">Alterar Senha</h2>
+                            <div id="imput-group">
+                                <div class="imput-box">
+                                    <label for="senha-atual">Senha Atual</label>
+                                    <i class="fas fa-lock"></i>
+                                    <input id="senha-atual" type="password" name="senha-atual" required>
+                                </div>
+                                <div class="imput-box">
+                                    <label for="senha-nova">Nova Senha</label>
+                                    <i class="fas fa-key"></i>
+                                    <input id="senha-nova" type="password" name="senha-nova" required>
+                                </div>
+                                <button type="submit" class="buttonsmit">
+                                    <i class="fas fa-save"></i> Salvar Nova Senha
+                                </button>
                             </div>
-                            <div class="imput-box">
-                                <label for="senha-nova">Nova Senha</label>
-                                <i class="fas fa-key"></i>
-                                <input id="senha-nova" type="password" name="senha-nova">
-                            </div>
-                            <button type="submit" class="buttonsmit">
-                                <i class="fas fa-save"></i> Salvar Nova Senha
-                            </button>
-                        </div>
-                    </form>
+                        </form>
 
-                    <form id="form-endereco">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 15px;">Meu Endereço</h2>
-                        <div id="imput-group">
-                            <div class="imput-box">
-                                <label for="cep">CEP</label>
-                                <input id="cep" type="text" name="cep">
-                            </div>
-                            <div class="imput-box">
-                                <label for="bairro">Bairro</label>
-                                <input id="bairro" type="text" name="bairro">
-                            </div>
-                            <div class="imput-box">
-                                <label for="rua">Rua / Logradouro</label>
-                                <input id="rua" type="text" name="rua">
-                            </div>
-                            <div class="imput-box">
-                                <label for="rua">Número</label>
-                                <input id="número" type="number" name="número" >
-                            </div>
-                            <button type="submit" class="buttonsmit">
-                                <i class="fas fa-save"></i> Salvar Endereço
+                        <!-- 👉 Botão para voltar à Home -->
+                        <a href="/" class="button" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-top: 20px;">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+
+                        <!-- 👉 Botão de Logout -->
+                        <form action="/logout" method="POST" style="margin-top: 10px;">
+                            {{ csrfField() }}
+                            <button type="submit" class="button" style="display: inline-flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
                             </button>
-                        </div>
-                    </form>
+                        </form>
+
                     </div>
                 </section>
 
-                <aside class="cart-summary"> <h3>Minhas Cartas à Venda</h3>
+                <aside class="cart-summary">
+                    <h3>Minhas Cartas à Venda</h3>
                     
+                    <!-- Exemplo estático, depois pode ser dinâmico -->
                     <div class="item-venda">
                         <img src="https://assets.pokemon.com/static-assets/content-assets/cms2/img/cards/web/SV01/SV01_EN_215.png" alt="Riolu">
                         <div class="item-venda-info">
@@ -91,20 +102,10 @@
                         <button class="btn-editar-venda"><i class="fas fa-pen"></i></button>
                     </div>
 
-                    <div class="item-venda">
-                        <img src="https://assets.pokemon.com/static-assets/content-assets/cms2/img/cards/web/SWSH11/SWSH11_EN_17.png" alt="Charizard">
-                        <div class="item-venda-info">
-                            <p>Charizard V (SWSH11)</p>
-                            <span>R$ 80,00</span>
-                        </div>
-                        <button class="btn-editar-venda"><i class="fas fa-pen"></i></button>
-                    </div>
-                    
-                    <a href="Venda.html" class="button" style="text-decoration: none; justify-content: center; width: 100%; margin-top: 20px;">
+                    <a href="/vender" class="button" style="text-decoration: none; justify-content: center; width: 100%; margin-top: 20px;">
                         <i class="fas fa-plus"></i> Anunciar Nova Carta
                     </a>
                 </aside>
-                </div>
             </div>
         </main>
     </div>

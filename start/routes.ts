@@ -67,6 +67,9 @@ router.group(() => {
 
     // Logout
     router.post('/logout', [() => import('#controllers/auth_controller'), 'logout']).as('logout')
+
+    router.post('/perfil/update', [() => import('#controllers/users_controller'), 'updateProfile'])
+    router.post('/perfil/password', [() => import('#controllers/users_controller'), 'updatePassword'])
     
     // API de Busca Geral (Barra de pesquisa do topo)
     router.get('/api/search', [() => import('#controllers/card_searches_controller'), 'search'])
