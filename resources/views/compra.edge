@@ -3,163 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    <script src="index.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
-    <title>PokeCardBay</title>
-    
-    <style>
-    
-        .compra-container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px; 
-        }
-        
-        .compra-layout {
-            display: flex;
-            flex-wrap: wrap; 
-            justify-content: space-between;
-            gap: 25px;
-            align-items: flex-start;
-        }
-
-        .checkout-form {
-            flex: 3;
-            min-width: 320px;
-            background-color: #fff;
-            border-radius: 16px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        .checkout-form h2 {
-            font-size: 1.6rem;
-            font-weight: 600;
-            color: #333;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-
-        .checkout-form #imput-group {
-            gap: 15px; 
-        }
-        .checkout-form .imput-box label {
-            margin-bottom: 4px; 
-        }
-        .checkout-form .imput-box i {
-            top: 32px; 
-        }
-
-        .compra-layout .cart-summary {
-            flex: 1;
-            min-width: 300px;
-        }
-        
-        @media (max-width: 900px) {
-            .compra-layout .cart-summary {
-                position: static;
-                width: 100%;
-            }
-        }
-    </style>
+    <title>PokeCardBay - Finalizar Compra</title>
 </head>
 
 <body class="full">
     <div class="page-container">
         
-<div class="header">
-    <div class="logo">
-        <img src="https://media.criticalhit.net/2017/01/Pokemon-Hearthstone-header.jpg" alt="Logo da loja">
-    </div>
-    </div>
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo">
+                <img src="https://media.criticalhit.net/2017/01/Pokemon-Hearthstone-header.jpg" alt="Banner Pokémon">
+            </div>
 
-<main class="compra-container">
-    <div class="compra-layout">
+            <nav class="menu">
+                <ul>
+                    <li>
+                        <button title="Home" onclick="window.location.href='/'">
+                            <i class="fa-solid fa-house"></i>
+                        </button>
+                    </li>
+                    <li>
+                        <button title="Carrinho" onclick="window.location.href='/meuCarrinho'">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </button>
+                    </li>
+                    <li>
+                        <button title="Perfil" onclick="window.location.href='/meuPerfil'">
+                            <i class="fa-regular fa-circle-user"></i>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
 
-        <section class="checkout-form">
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="perfil-container">
+            <h2 style="margin-bottom: 20px; color: #333; text-align: center;">Finalizar Pedido</h2>
             
-            <form id="form-endereco">
-                <h2>Endereço de Entrega</h2>
-                <div id="imput-group">
-                    <div class="imput-box">
-                        <label for="cep">CEP</label>
-                        <i class="fa-solid fa-map-marker-alt"></i>
-                        <input id="cep" type="text" name="cep" placeholder="00000-000" required>
-                    </div>
-                    <div class="imput-box">
-                        <label for="rua">Rua / Logradouro</label>
-                        <i class="fa-solid fa-road"></i>
-                        <input id="rua" type="text" name="rua" placeholder="Rua dos Bobos" required>
-                    </div>
-                    <div style="display: flex; gap: 15px;">
-                        <div class="imput-box" style="flex: 1;">
-                            <label for="numero">Número</label>
-                            <i class="fa-solid fa-hashtag"></i>
-                            <input id="numero" type="text" name="numero" placeholder="Nº 0" required>
+            <div class="layout">
+                
+                <!-- COLUNA DA ESQUERDA: FORMULÁRIOS -->
+                <section class="checkout-form">
+                    
+                    <!-- Endereço -->
+                    <!-- Adicionado autocomplete="off" para evitar sugestões do navegador -->
+                    <form id="form-endereco" onsubmit="event.preventDefault();" autocomplete="off">
+                        <h3 style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Endereço de Entrega</h3>
+                        
+                        <div id="imput-group">
+                            <div class="imput-box">
+                                <label for="cep">CEP</label>
+                                <input id="cep" type="text" name="cep" placeholder="00000-000" required autocomplete="off">
+                            </div>
+                            
+                            <div class="imput-box">
+                                <label for="rua">Rua / Logradouro</label>
+                                <input id="rua" type="text" name="rua" placeholder="Rua Exemplo" required autocomplete="off">
+                            </div>
+                            
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div class="imput-box" style="flex: 1;">
+                                    <label for="numero">Número</label>
+                                    <input id="numero" type="text" name="numero" placeholder="Nº" required autocomplete="off">
+                                </div>
+                                <div class="imput-box" style="flex: 2;">
+                                    <label for="bairro">Bairro</label>
+                                    <input id="bairro" type="text" name="bairro" placeholder="Bairro" required autocomplete="off">
+                                </div>
+                            </div>
                         </div>
-                        <div class="imput-box" style="flex: 2;">
-                            <label for="bairro">Bairro</label>
-                            <i class="fa-solid fa-signs-post"></i>
-                            <input id="bairro" type="text" name="bairro" required>
-                        </div>
-                    </div>
-                </div>
-            </form>
+                    </form>
 
-            <form id="form-pagamento">
-                <h2>Forma de Pagamento</h2>
-                <div id="imput-group">
-                    <div class="imput-box">
-                        <label for="nome-cartao">Nome no Cartão</label>
-                        <i class="fa-solid fa-user"></i>
-                        <input id="nome-cartao" type="text" name="nome-cartao" required>
-                    </div>
-                    <div class="imput-box">
-                        <label for="num-cartao">Número do Cartão</label>
-                        <i class="fa-solid fa-credit-card"></i>
-                        <input id="num-cartao" type="text" name="num-cartao" placeholder="0000 0000 0000 0000" required>
-                    </div>
-                    <div style="display: flex; gap: 15px;">
-                        <div class="imput-box" style="flex: 2;">
-                            <label for="validade">Validade</label>
-                            <i class="fa-solid fa-calendar-alt"></i>
-                            <input id="validade" type="text" name="validade" placeholder="MM/AA" required>
+                    <!-- Pagamento -->
+                    <!-- Adicionado autocomplete="off" para evitar sugestões do navegador -->
+                    <form id="form-pagamento" style="margin-top: 30px;" onsubmit="event.preventDefault();" autocomplete="off">
+                        <h3 style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Dados do Pagamento</h3>
+                        
+                        <div id="imput-group">
+                            <div class="imput-box">
+                                <label for="nome-cartao">Nome no Cartão</label>
+                                <input id="nome-cartao" type="text" name="nome-cartao" placeholder="Como no cartão" required autocomplete="off">
+                            </div>
+                            
+                            <div class="imput-box">
+                                <label for="num-cartao">Número do Cartão</label>
+                                <input id="num-cartao" type="text" name="num-cartao" placeholder="0000 0000 0000 0000" required autocomplete="off">
+                            </div>
+                            
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div class="imput-box" style="flex: 2;">
+                                    <label for="validade">Validade</label>
+                                    <input id="validade" type="text" name="validade" placeholder="MM/AA" required autocomplete="off">
+                                </div>
+                                <div class="imput-box" style="flex: 1;">
+                                    <label for="cvv">CVV</label>
+                                    <input id="cvv" type="text" name="cvv" placeholder="123" required autocomplete="off">
+                                </div>
+                            </div>
                         </div>
-                        <div class="imput-box" style="flex: 1;">
-                            <label for="cvv">CVV</label>
-                            <i class="fa-solid fa-lock"></i>
-                            <input id="cvv" type="text" name="cvv" placeholder="123" required>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </section>
+                    </form>
+                </section>
 
-        <aside class="cart-summary">
-            <h3>Resumo do Pedido</h3>
-            <div class="summary-item">
-                <span>Subtotal:</span>
-                <span>R$ 159,70</span>
+                <!-- COLUNA DA DIREITA: RESUMO -->
+                <aside class="cart-summary" style="height: fit-content;">
+                    <h3>Resumo do Pedido</h3>
+                    
+                    <!-- Área de Preview -->
+                    <div class="product-preview" id="product-preview-area" style="text-align: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                        <img id="product-image" src="https://via.placeholder.com/150" alt="Imagem da Carta" style="width: 100px; height: auto; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <h4 id="product-name" style="font-size: 1.1rem; color: #444; margin: 5px 0;">Produto Selecionado</h4>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Subtotal:</span>
+                        <span id="subtotal-price">R$ 0,00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Frete:</span>
+                        <span id="frete-price">A Calcular</span> 
+                    </div>
+                    
+                    <div class="summary-item total">
+                        <span>Total:</span>
+                        <span id="total-price">R$ 0,00</span>
+                    </div>
+                    
+                    <!-- FORMULÁRIO DE CONFIRMAÇÃO DO PAGAMENTO -->
+                    <form action="/checkout/confirm" method="POST" style="margin-top: 20px;">
+                        {{ csrfField() }}
+                        <button type="submit" class="button" style="width: 100%; justify-content: center;">
+                            Confirmar Pagamento
+                        </button>
+                    </form>
+                    
+                    <button class="button" onclick="window.history.back()" style="background-color: #ddd; color: #555; margin-top: 10px; width: 100%; justify-content: center;">
+                        Voltar
+                    </button>
+                </aside>
+                
             </div>
-            <div class="summary-item">
-                <span>Frete:</span>
-                <span>R$ 10,00</span> </div>
-            <div class="summary-item total">
-                <span>Total:</span>
-                <span>R$ 169,70</span>
-            </div>
-            <button class="button" form="form-pagamento">
-                Confirmar Pagamento
-            </button>
-        </aside>
-
-    </div>
         </main>
+
+        <footer class="footer" style="text-align: center; padding: 20px; margin-top: auto; background: #fff;">
+            <p>&copy; 2025 PokeCardBay. Todos os direitos reservados.</p>
+        </footer>
     </div>
+
+    <!-- Lógica JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            
+            const name = params.get('name');
+            const priceRaw = params.get('price');
+            const image = params.get('image');
+            const count = params.get('count'); 
+
+            const imgEl = document.getElementById('product-image');
+            const nameEl = document.getElementById('product-name');
+            const subtotalEl = document.getElementById('subtotal-price');
+            const totalEl = document.getElementById('total-price');
+            const freteEl = document.getElementById('frete-price');
+
+            // --- Lógica de Exibição ---
+            if (count && parseInt(count) > 1) {
+                imgEl.style.display = 'none';
+                nameEl.textContent = 'Vários Itens no Carrinho';
+                nameEl.style.fontWeight = 'bold';
+            } else {
+                if (name) nameEl.textContent = name;
+                if (image) imgEl.src = image;
+            }
+
+            // --- Cálculo de Valores ---
+            let price = 0;
+            if (priceRaw) {
+                if (/^[0-9.]+$/.test(priceRaw) && !priceRaw.includes(',')) {
+                    price = parseFloat(priceRaw);
+                } else {
+                    const cleanPrice = priceRaw.replace('R$', '').trim().replace(/\./g, '').replace(',', '.');
+                    price = parseFloat(cleanPrice);
+                }
+                if (isNaN(price)) price = 0;
+            }
+
+            const formatCurrency = (val) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            subtotalEl.textContent = formatCurrency(price);
+            
+            freteEl.textContent = "A Calcular";
+            totalEl.textContent = formatCurrency(price);
+        });
+    </script>
 </body>
 </html>

@@ -19,10 +19,8 @@ export default authConfig
 
 
 
-/**
- * Inferring types from the configured auth
- * guards.
- */
+// Inferring types from the configured auth guards.
+
 declare module '@adonisjs/auth/types' {
   export interface Authenticators extends InferAuthenticators<typeof authConfig> {}
 }

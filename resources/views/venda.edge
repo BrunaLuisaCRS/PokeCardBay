@@ -10,7 +10,8 @@
     <style>
         .imput-box select,
         .imput-box input[type="file"],
-        .imput-box input[readonly] {
+        .imput-box input[readonly],
+        .imput-box input:not([readonly]) {
             padding: 10px 12px 10px 36px !important;
             border: 1px solid #ccc;
             border-radius: 8px;
@@ -28,11 +29,17 @@
             position: absolute;
             left: 10px; top: 36px;
             color: #aaa;
-            cursor: pointer; /* Mãozinha */
+            cursor: pointer;
             z-index: 10;
-            padding: 5px; /* Área de clique maior */
+            padding: 5px; 
         }
         .imput-box i:hover { color: #a005be; }
+
+        /* Estilo específico para o select ficar alinhado */
+        .imput-box select {
+            cursor: pointer;
+            height: 42px;
+        }
 
         /* LISTA DE SUGESTÕES */
         .suggestions-box {
@@ -57,18 +64,41 @@
             align-items: center;
             gap: 10px;
         }
-        .suggestion-item:hover { background-color: #f0f0f0; }
+        /* Estilo para Hover do Mouse E Seleção via Teclado */
+        .suggestion-item:hover, 
+        .suggestion-item.active { 
+            background-color: #f0f0f0; 
+        }
+        
         .suggestion-thumb { width: 40px; height: auto; border-radius: 4px; }
         .suggestion-text { display: flex; flex-direction: column; font-size: 0.85rem; }
+
+        /* PREVIEW FLUTUANTE (ZOOM AO PASSAR O MOUSE) */
+        #hover-preview-float {
+            position: fixed;
+            display: none;
+            width: 240px; /* Tamanho da imagem ampliada */
+            z-index: 9999;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            pointer-events: none; /* Importante para não bloquear o clique no item abaixo */
+            border: 4px solid #fff;
+            background-color: #fff;
+            transition: top 0.1s ease, left 0.1s ease; /* Suaviza movimento leve */
+        }
     </style>
 </head>
 
 <body class="cadastro"> 
 
+    <!-- Imagem flutuante oculta inicialmente -->
+    <img id="hover-preview-float" src="" alt="Preview Ampliado">
+
     <div class="container">
 
         <div class="form-img">
-            <img id="card-preview" src="https://images.pokemontcg.io/swsh1/1_hires.png" alt="Prévia">
+            <!-- Imagem padrão: Card Back -->
+            <img id="card-preview" src="https://tcg.pokemon.com/assets/img/global/tcg-card-back-2x.jpg" alt="Prévia">
         </div>
 
         <div class="form-cadastro"> 
@@ -90,7 +120,7 @@
                     <div class="imput-box">
                         <label for="card_name">Nome da Carta</label>
                         <i class="fa-solid fa-search" id="search-btn" title="Clique para buscar"></i>
-                        <input id="card_name" type="text" name="card_name" placeholder="Digite e aperte Enter ou clique na lupa" required autocomplete="off">
+                        <input id="card_name" type="text" name="card_name" placeholder="Digite o nome da carta..." required autocomplete="off">
                         <div id="suggestions" class="suggestions-box"></div>
                     </div>
 
@@ -103,7 +133,24 @@
                     <div class="imput-box">
                         <label for="card_rarity">Raridade</label>
                         <i class="fa-solid fa-star"></i>
-                        <input id="card_rarity" type="text" name="card_rarity" placeholder="Automático..." readonly required>
+                        <select id="card_rarity" name="card_rarity" required>
+                            <option value="" disabled selected>Selecione a raridade</option>
+                            <option value="Common">Common (Comum)</option>
+                            <option value="Uncommon">Uncommon (Incomum)</option>
+                            <option value="Rare">Rare (Rara)</option>
+                            <option value="Rare Holo">Rare Holo</option>
+                            <option value="Rare Ultra">Rare Ultra</option>
+                            <option value="Rare Secret">Rare Secret</option>
+                            <option value="Promo">Promo</option>
+                            <option value="Rare Holo V">Rare Holo V</option>
+                            <option value="Rare Holo VMAX">Rare Holo VMAX</option>
+                            <option value="Rare Holo GX">Rare Holo GX</option>
+                            <option value="Rare Holo EX">Rare Holo EX</option>
+                            <option value="Amazing Rare">Amazing Rare</option>
+                            <option value="Rare Rainbow">Rare Rainbow</option>
+                            <option value="Rare Shiny">Rare Shiny</option>
+                            <option value="Desconhecida">Outra / Desconhecida</option>
+                        </select>
                     </div>
 
                     <div class="imput-box">
@@ -125,15 +172,22 @@
 
     <script>
         const nameInput = document.getElementById('card_name');
-        const searchBtn = document.getElementById('search-btn'); // Botão Lupa
+        const searchBtn = document.getElementById('search-btn');
         const suggestionsBox = document.getElementById('suggestions');
         const imgPreview = document.getElementById('card-preview');
         const numberDisplay = document.getElementById('numero_visual');
         const rarityInput = document.getElementById('card_rarity');
         const apiIdInput = document.getElementById('api_id');
         const imageUrlInput = document.getElementById('image_url');
+        
+        // Elemento da imagem flutuante
+        const floatImg = document.getElementById('hover-preview-float');
 
-        // FUNÇÃO DE BUSCA
+        // VARIÁVEIS DE ESTADO PARA NAVEGAÇÃO POR TECLADO
+        let currentFocus = -1;
+        let currentCardsData = []; // Armazena os dados atuais da busca para acesso via teclado
+
+        // FUNÇÃO DE BUSCA (LOCAL)
         async function performSearch() {
             const query = nameInput.value.trim();
 
@@ -142,69 +196,151 @@
                 return;
             }
 
-            suggestionsBox.innerHTML = '<div style="padding:10px; color:#666;">Buscando...</div>';
+            suggestionsBox.innerHTML = '<div style="padding:10px; color:#666;">Buscando no banco...</div>';
             suggestionsBox.style.display = 'block';
 
             try {
-                const response = await fetch(`/api/market/autocomplete?q=${query}`);
+                const response = await fetch(`/api/market/autocomplete?q=${encodeURIComponent(query)}`);
                 
-                // Tratamento de Erros Específicos
-                if (response.status === 429) {
-                    suggestionsBox.innerHTML = '<div style="padding:10px; color:orange;">Muitas tentativas. Aguarde...</div>';
-                    return;
-                }
-                if (response.status === 503 || response.status === 504) {
-                    suggestionsBox.innerHTML = '<div style="padding:10px; color:red;">Sistema do Pokémon TCG fora do ar.</div>';
-                    return;
-                }
+                if (!response.ok) throw new Error('Erro na busca');
 
-                const cards = await response.json();
+                const json = await response.json();
+                const cards = Array.isArray(json) ? json : (json.data || []);
+                
                 renderSuggestions(cards);
 
             } catch (error) {
                 console.error("Erro na busca:", error);
-                suggestionsBox.innerHTML = '<div style="padding:10px; color:red;">Erro ao buscar. Tente novamente.</div>';
+                suggestionsBox.innerHTML = '<div style="padding:10px; color:red;">Erro ao buscar cartas.</div>';
             }
         }
 
         // 1. EVENTO: CLIQUE NA LUPA
-        searchBtn.addEventListener('click', function() {
-            performSearch();
-        });
+        searchBtn.addEventListener('click', performSearch);
 
-        // 2. EVENTO: APERTAR ENTER
+        // 2. EVENTO: TECLADO NO INPUT (Navegação + Enter)
         nameInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault(); // Impede enviar o formulário
-                performSearch();
+            let items = suggestionsBox.getElementsByClassName("suggestion-item");
+            
+            if (event.key === "ArrowDown") {
+                currentFocus++;
+                addActive(items);
+            } else if (event.key === "ArrowUp") {
+                currentFocus--;
+                addActive(items);
+            } else if (event.key === "Enter") {
+                event.preventDefault(); // Impede o envio do form ao dar Enter
+                
+                if (currentFocus > -1) {
+                    // Se tem item selecionado com setas, simula o clique nele
+                    if (items) items[currentFocus].click();
+                } else {
+                    // Se não tem item selecionado, faz a busca
+                    performSearch();
+                }
             }
         });
-        
-        // (REMOVIDO O EVENTO 'INPUT' PARA NÃO BUSCAR DIGITANDO)
 
+        // Função para destacar item ativo via Teclado
+        function addActive(items) {
+            if (!items) return false;
+            
+            // Remove active de todos
+            removeActive(items);
+            
+            // Limites do loop
+            if (currentFocus >= items.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (items.length - 1);
+            
+            // Adiciona classe active
+            items[currentFocus].classList.add("active");
+            
+            // Rola o scroll da lista se necessário para manter o item visível
+            items[currentFocus].scrollIntoView({ block: 'nearest' });
+
+            // --- MOSTRAR PREVIEW AO NAVEGAR COM SETAS ---
+            const card = currentCardsData[currentFocus];
+            if (card && card.image) {
+                floatImg.src = card.image;
+                floatImg.style.display = 'block';
+                
+                // Calcula posição ao lado do item selecionado
+                const rect = items[currentFocus].getBoundingClientRect();
+                // Posiciona à direita da lista (left + width)
+                floatImg.style.top = rect.top + 'px';
+                floatImg.style.left = (rect.right + 15) + 'px';
+            } else {
+                floatImg.style.display = 'none';
+            }
+        }
+
+        function removeActive(items) {
+            for (let i = 0; i < items.length; i++) {
+                items[i].classList.remove("active");
+            }
+        }
+        
         // RENDERIZA A LISTA
         function renderSuggestions(cards) {
+            currentCardsData = cards; // Salva para uso no teclado
+            currentFocus = -1; // Reseta foco
             suggestionsBox.innerHTML = '';
             
             if (!cards || cards.length === 0) {
-                suggestionsBox.innerHTML = '<div style="padding:10px;">Nenhuma carta encontrada.</div>';
+                suggestionsBox.innerHTML = '<div style="padding:10px;">Nenhuma carta encontrada no sistema.</div>';
                 return;
             }
 
-            cards.forEach(card => {
+            cards.forEach((card, index) => {
                 const div = document.createElement('div');
                 div.classList.add('suggestion-item');
                 
+                const thumb = card.image || 'https://via.placeholder.com/40';
+
                 div.innerHTML = `
-                    <img src="${card.image}" class="suggestion-thumb" alt="${card.name}">
+                    <img src="${thumb}" class="suggestion-thumb" alt="${card.name}">
                     <div class="suggestion-text">
                         <strong>${card.name}</strong>
                         <span>Num: ${card.number} | ${card.rarity}</span>
                     </div>
                 `;
 
+                // --- MOUSE HOVER (Preview segue o mouse) ---
+                div.addEventListener('mouseenter', () => {
+                    // Reseta o foco do teclado para evitar conflito visual
+                    removeActive(suggestionsBox.getElementsByClassName("suggestion-item"));
+                    currentFocus = index; // Sincroniza índice
+                    div.classList.add('active'); // Opcional, para manter highlight visual
+
+                    if (card.image) {
+                        floatImg.src = card.image;
+                        floatImg.style.display = 'block';
+                    }
+                });
+
+                div.addEventListener('mousemove', (e) => {
+                    // Posiciona baseado no mouse
+                    let top = e.clientY + 15;
+                    let left = e.clientX + 25;
+
+                    // Ajuste para não sair da tela (parte inferior)
+                    if (top + 350 > window.innerHeight) {
+                        top = e.clientY - 350;
+                    }
+                    
+                    floatImg.style.top = top + 'px';
+                    floatImg.style.left = left + 'px';
+                });
+
+                div.addEventListener('mouseleave', () => {
+                    floatImg.style.display = 'none';
+                    div.classList.remove('active');
+                });
+                // -----------------------------------------------
+
                 div.addEventListener('click', () => {
                     selectCard(card);
+                    floatImg.style.display = 'none';
                 });
 
                 suggestionsBox.appendChild(div);
@@ -216,20 +352,38 @@
         function selectCard(card) {
             nameInput.value = card.name;
             numberDisplay.value = card.number;
-            rarityInput.value = card.rarity || 'Comum'; 
+            
+            if (card.rarity) {
+                let optionFound = false;
+                for (let i = 0; i < rarityInput.options.length; i++) {
+                    if (rarityInput.options[i].value === card.rarity) {
+                        rarityInput.selectedIndex = i;
+                        optionFound = true;
+                        break;
+                    }
+                }
+                if (!optionFound) rarityInput.value = ""; 
+            } else {
+                rarityInput.value = "";
+            }
 
-            apiIdInput.value = card.id;
+            apiIdInput.value = card.id; 
             imageUrlInput.value = card.image;
-            imgPreview.src = card.image;
+            
+            if(card.image) {
+                imgPreview.src = card.image;
+            }
 
             suggestionsBox.style.display = 'none';
+            // Reseta foco para evitar reabrir com setas acidentalmente
+            currentFocus = -1;
         }
 
         // Fecha lista ao clicar fora
         document.addEventListener('click', (e) => {
-            // Se clicar fora do input, da lista e DO BOTÃO DA LUPA
             if (!nameInput.contains(e.target) && !suggestionsBox.contains(e.target) && !searchBtn.contains(e.target)) {
                 suggestionsBox.style.display = 'none';
+                floatImg.style.display = 'none';
             }
         });
     </script>

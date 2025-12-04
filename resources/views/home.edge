@@ -6,10 +6,45 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    
+    <!-- Token CSRF -->
+    <meta name="csrf-token" content="{{ csrfToken }}">
 
     <script type="module" src="./index.js"></script>
     <link rel="stylesheet" href="../assets/css/style.css">
     <title>PokeCardBay</title>
+
+    <style>
+        /* CSS do Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
+        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 0; border-radius: 12px; width: 90%; max-width: 800px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); animation: modalFadeIn 0.3s; position: relative; }
+        @keyframes modalFadeIn { from {opacity: 0; transform: translateY(-50px);} to {opacity: 1; transform: translateY(0);} }
+        .close-modal { color: #aaa; float: right; font-size: 28px; font-weight: bold; margin-right: 20px; margin-top: 10px; cursor: pointer; }
+        .close-modal:hover { color: #000; }
+        .modal-body { display: flex; flex-direction: column; }
+        .modal-top { display: flex; padding: 20px; gap: 20px; border-bottom: 1px solid #eee; }
+        .modal-img { width: 250px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .modal-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .modal-sellers { padding: 20px; background-color: #f9f9f9; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
+        .seller-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .seller-table th, .seller-table td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; vertical-align: middle; }
+        .seller-table th { background-color: #eee; color: #333; }
+        
+        /* Botões */
+        .card-actions { display: flex; gap: 8px; justify-content: center; margin-top: 10px; width: 100%; }
+        .btn-card { width: 100%; padding: 10px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+        .btn-buy { background-color: #6a1b9a; color: white; }
+        .btn-buy:hover { background-color: #4a148c; }
+        
+        /* Botões de Ação na Tabela do Modal */
+        .action-group { display: flex; gap: 10px; justify-content: flex-end; }
+        .btn-table-buy { background-color: #6a1b9a; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-table-buy:hover { background-color: #4a148c; }
+        .btn-table-cart { background-color: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .btn-table-cart:hover { background-color: #218838; }
+
+        @media (max-width: 700px) { .modal-top { flex-direction: column; align-items: center; text-align: center; } }
+    </style>
 </head>
 <body class="full">
 
@@ -20,277 +55,367 @@
             <div class="logo">
                 <img src="https://media.criticalhit.net/2017/01/Pokemon-Hearthstone-header.jpg" alt="Banner Pokémon">
             </div>
-
             <nav class="menu">
                 <ul>
-                <li>
-                    <button title="Filtros"><i class="fa-solid fa-filter"></i></button>
-                </li>
-                <li>
-                    <button title="Carrinho" onclick="window.location.href='/carrinho'"><i class="fa-solid fa-cart-shopping"></i></button>
-                </li>
-                <li>
-                    <button title="Home"><i class="fa-regular fa-house" onclick="window.location.href='/'"></i></button>
-                </li>
+                <li><button title="Carrinho" onclick="window.location.href='/meuCarrinho'"><i class="fa-solid fa-cart-shopping"></i></button></li>
+                <li><button title="Home"><i class="fa-regular fa-house" onclick="window.location.href='/'"></i></button></li>
                 <li class="barra-pesquisa-container">
                   <form id="search-form" class="barra-pesquisa" role="search">
-                    <label for="search-input" class="visually-hidden">Buscar Card:</label> <input type="text" id="search-input" placeholder="Digite o nome (ex: Pikachu)">
+                    <label for="search-input" class="visually-hidden">Buscar Carta:</label> 
+                    <input type="text" id="search-input" placeholder="Buscar Carta (ex: Charizard)">
                     <button type="submit"><i class="fa-solid fa-search"></i></button>
                   </form>
                 </li>
-                <li>
-                    <button title="Perfil"><i class="fa-regular fa-circle-user"onclick="window.location.href='/meuPerfil'"></i></button>
-                </li>
+                <li><button title="Perfil"><i class="fa-regular fa-circle-user" onclick="window.location.href='/meuPerfil'"></i></button></li>
                 </ul>
             </nav>
         </header>
 
-        <div id="results-container" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; justify-content: center; padding: 20px;">
-        </div>
+        <!-- RESULTADOS DA BUSCA -->
+        <div id="results-container" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; justify-content: center; padding: 20px;"></div>
 
-        <div id="results-container" style="display: flex; flex-wrap: wrap; gap: 10px; ...">
-        </div>
-
+        <!-- PAGINAÇÃO -->
         <div id="pagination-controls" style="text-align: center; padding: 20px; display: none;">
-        <button id="btn-prev">&laquo; Anterior</button>
-        <span id="page-info" style="margin: 0 15px;">Página 1</span>
-        <button id="btn-next">Próxima &raquo;</button>
+            <button id="btn-prev">&laquo; Anterior</button>
+            <span id="page-info" style="margin: 0 15px;">Página 1</span>
+            <button id="btn-next">Próxima &raquo;</button>
         </div>
 
-        <section class="showcase">
-            </section>
-        
-        <!-- SHOWCASE DE CARTAS -->
-        <section class="showcase">
-        <h2>Cartas em Destaque</h2>
+        <!-- CARROSSEL -->
+        <section class="showcase" id="showcase-section">
+            <h2>Destaques (Maiores Valores)</h2>
+            <div class="swiper">
+                <div class="swiper-wrapper">
+                    
+                    @each(card in topCards)
+                        <div class="swiper-slide card">
+                            <!-- Ao clicar, chama a função que busca TODAS as ofertas desta carta (mesmo ID API) -->
+                            <img src="{{ card.imageUrl || 'https://via.placeholder.com/245x342' }}" alt="{{ card.name }}" 
+                                 onclick="carregarOfertasCarrossel('{{ card.cardApiId }}', '{{ card.safeName }}', '{{ card.safeImg }}', '{{ card.safeRarity }}')" 
+                                 style="cursor: pointer;">
+                            
+                            <h3>{{ card.name }}</h3>
+                            <p>R$ {{ Number(String(card.price).replace(',', '.')).toFixed(2).replace('.', ',') }}</p>
+                            
+                            <div class="card-actions">
+                                <button class="btn-card btn-buy" onclick="irParaCompra('{{ card.safeName }}', '{{ String(card.price).replace(',', '.') }}', '{{ card.safeImg }}')">Comprar</button>
+                            </div>
+                        </div>
+                    @end
 
-        <div class="swiper">
-            <div class="swiper-wrapper">
-            <!-- Slide 1 -->
-                <div class="swiper-slide card">
-                <img src="https://assets.pokemon.com/static-assets/content-assets/cms2/img/cards/web/SM11/SM11_EN_72.png" alt="Carta Reuniclus">
-                <h3>Espeon GX</h3>
-                <p>R$ 154,80</p>
-                <button>Comprar</button>
-            </div>
-            <!-- Slide 2 -->
-            <div class="swiper-slide card">
-                <img src="https://assets.pokemon.com/static-assets/content-assets/cms2/img/cards/web/SV05/SV05_EN_171.png" alt="Carta Reuniclus">
-                <h3>Reuniclus</h3>
-                <p>R$ 54,80</p>
-                <button>Comprar</button>
-            </div>
-            <!-- Slide 3 -->
-            <div class="swiper-slide card">
-                <img src="https://assets.pokemon.com/static-assets/content-assets/cms2/img/cards/web/SMP/SMP_EN_SM240.png" alt="Carta Espeon">
-                <h3>Espeon GX</h3>
-                <p>R$ 120,00</p>
-                <button>Comprar</button>
-            </div>
-            <!-- Slide 4 -->
-            <div class="swiper-slide card">
-                <img src="https://copag.com.br/uploads/tinymce/c_SWSH11-234-1.png" alt="Carta Pikachu">
-                <h3>Pikachu VMax</h3>
-                <p>R$ 170,75</p>
-                <button>Comprar</button>
-            </div>
-            <!-- Slide 5 -->
-            <div class="swiper-slide card">
-                <img src="https://assets.pokemon.com/static-assets/content-assets/cms2/img/cards/web/SM9/SM9_EN_165.png" alt="Carta Gengar">
-                <h3>Gengar GX</h3>
-                <p>R$ 2000,00</p>
-                <button>Comprar</button>
-            </div>
+                    @if(!topCards || topCards.length === 0)
+                        <div style="text-align: center; width: 100%; color: #666; padding: 20px;">
+                            Nenhuma carta cadastrada no momento.
+                        </div>
+                    @endif
 
-            <!-- Slide 6 -->
-            <div class="swiper-slide card">
-                <img src="https://assets.pokemon.com/static-assets/content-assets/cms2/img/cards/web/XY12/XY12_EN_11.png" alt="Carta Gengar">
-                <h3>Charizard</h3>
-                <p>R$ 50429,94</p>
-                <button>Comprar</button>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-pagination"></div>
             </div>
-
-            <!-- Slide 7 -->
-            <div class="swiper-slide card">
-                <img src="https://assets.pokemon.com/static-assets/content-assets/cms2/img/cards/web/SV10/SV10_EN_232.png" alt="Carta Gengar">
-                <h3>Cynthia's Gachomp</h3>
-                <p>R$ 3250,23</p>
-                <button>Comprar</button>
-            </div>
-
-            <!-- Slide 8 -->
-            <div class="swiper-slide card">
-                <img src="https://assets.pokemon.com/static-assets/content-assets/cms2/img/cards/web/ME01/ME01_EN_188.png" alt="Carta Gengar">
-                <h3>Mega Lucario EX </h3>
-                <p>R$ 52000,00</p>
-                <button>Comprar</button>
-            </div>
-         
-            </div>
-
-            <!-- Botões de navegação -->
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-
-            <!-- Paginação -->
-            <div class="swiper-pagination"></div>
-        </div>
         </section>
-
         
-        <!-- FOOTER -->
         <footer class="footer">
             <p>&copy; 2025 PokeCardBay. Todos os direitos reservados.</p>
         </footer>
 
     </div>
-        <!-- Swiper JS -->
+
+    <!-- MODAL DE DETALHES -->
+    <div id="cardDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="fecharModal()">&times;</span>
+            <div class="modal-body">
+                <div class="modal-top">
+                    <img id="modal-img" src="" alt="Carta" class="modal-img">
+                    <div class="modal-info">
+                        <h2 id="modal-title">Nome da Carta</h2>
+                        <p id="modal-rarity" style="font-size: 1.1rem; color: #555;"><strong>Raridade:</strong> -</p>
+                    </div>
+                </div>
+                <!-- Lista de Vendedores -->
+                <div class="modal-sellers">
+                    <h3>Ofertas Disponíveis</h3>
+                    <table class="seller-table">
+                        <thead>
+                            <tr>
+                                <th>Vendedor</th>
+                                <th>Preço</th>
+                                <th style="text-align: right;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-sellers-list">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
-    const swiper = new Swiper(".swiper", {
-        slidesPerView: 1,
-        spaceBetween: 20,
-        loop: true,
-        slidesPerGroup:1,
-        navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-        },
-        pagination: {
-        el: ".swiper-pagination",
-        clickable: true,
-        },
-        breakpoints: {
-            640: {
-                loop: true,         
-                slidesPerGroup: 1,  
-                slidesPerView: 2,
-                spaceBetween: 15
-            },
-            900: {
-                loop: true,         
-                slidesPerGroup: 1,  
-                slidesPerView: 3,
-                spaceBetween: 20
-            },
-            1200: {
-                loop: true,         
-                slidesPerGroup: 1,  
-                slidesPerView: 4,
-                spaceBetween: 25
-            },
-            }
+    document.addEventListener('DOMContentLoaded', () => {
+        const swiper = new Swiper(".swiper", {
+            slidesPerView: 1, spaceBetween: 20, loop: true,
+            navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+            pagination: { el: ".swiper-pagination", clickable: true },
+            breakpoints: { 640: { slidesPerView: 2 }, 900: { slidesPerView: 3 }, 1200: { slidesPerView: 4 } }
+        });
     });
     </script>
 
-    // ++++++++++++++++++++ api cartinhas ++++++++++++++++++
-
+    <!-- SCRIPT PRINCIPAL -->
     <script>
-    // Pega os elementos do HTML
-    const searchForm = document.getElementById('search-form');
-    const searchInput = document.getElementById('search-input');
-    const resultsContainer = document.getElementById('results-container');
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchForm = document.getElementById('search-form');
+        const searchInput = document.getElementById('search-input');
+        const resultsContainer = document.getElementById('results-container');
+        const showcaseSection = document.getElementById('showcase-section');
+        const paginationControls = document.getElementById('pagination-controls');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const pageInfo = document.getElementById('page-info');
+        
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        let currentQuery = '';
+        let currentPage = 1;
+        let lastPage = 1;
+        
+        let searchGroups = {}; 
+
+        // 1. Ir para Compra Direta
+        window.irParaCompra = function(nome, preco, imagem) {
+            const precoFormatado = String(preco).replace(',', '.');
+            const params = new URLSearchParams({ name: nome, price: precoFormatado, image: imagem });
+            window.location.href = `/compra?${params.toString()}`;
+        }
+
+        // 2. Adicionar ao Carrinho (AJAX)
+        window.adicionarAoCarrinho = async function(cardId, nomeCarta) {
+            if(!cardId || cardId === 0) {
+                alert("Este item não está disponível para venda online no momento.");
+                return;
+            }
+
+            try {
+                const btn = event.target.closest('button');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+                btn.disabled = true;
+
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken 
+                    },
+                    body: JSON.stringify({ market_card_id: cardId })
+                });
+
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+
+                if (response.ok) {
+                    alert(`"${nomeCarta}" adicionado ao carrinho!`);
+                } else {
+                    if(response.status === 401) {
+                        alert("Faça login para adicionar ao carrinho.");
+                        window.location.href = '/login';
+                    } else {
+                        alert("Erro ao adicionar.");
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Erro de conexão.");
+            }
+        }
+
+        // 3. Renderiza o Modal
+        window.renderModal = function(nome, imagem, raridade, offers) {
+            const modal = document.getElementById('cardDetailsModal');
+            document.getElementById('modal-title').innerText = nome;
+            document.getElementById('modal-img').src = imagem;
+            
+            const rarityEl = document.getElementById('modal-rarity');
+            if(rarityEl) rarityEl.innerHTML = `<strong>Raridade:</strong> ${raridade || 'Desconhecida'}`;
+            
+            const tbody = document.getElementById('modal-sellers-list');
+            tbody.innerHTML = '';
+
+            // Itera sobre todas as ofertas
+            offers.forEach(offer => {
+                const tr = document.createElement('tr');
+                
+                const safeName = nome.replace(/'/g, "\\'");
+                const safeImg = imagem.replace(/'/g, "\\'");
+                const priceVal = parseFloat(String(offer.price).replace(',', '.'));
+                const precoFormatado = priceVal.toFixed(2).replace('.', ',');
+                
+                const sellerName = offer.user_name || offer.userName || 'Vendedor';
+
+                tr.innerHTML = `
+                    <td><strong>${sellerName}</strong></td>
+                    <td>R$ ${precoFormatado}</td>
+                    <td style="text-align: right;">
+                        <div class="action-group">
+                            <button class="btn-table-buy" onclick="irParaCompra('${safeName}', '${priceVal}', '${safeImg}')">
+                                Comprar
+                            </button>
+                            <button class="btn-table-cart" onclick="adicionarAoCarrinho(${offer.id}, '${safeName}')" title="Adicionar ao Carrinho">
+                                <i class="fa-solid fa-cart-shopping"></i> +
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            modal.style.display = "block";
+        }
+
+        // 3.1 Abrir Modal da Busca (Já tem o grupo pronto)
+        window.abrirModalGrupo = function(groupId) {
+            const group = searchGroups[groupId];
+            if (group) {
+                renderModal(group.name, group.image, group.rarity, group.offers);
+            }
+        }
+
+        // 3.2 NOVA FUNÇÃO: Carregar Ofertas do Carrossel
+        // Busca na API para encontrar TODAS as ofertas daquela carta (mesmo api_id)
+        window.carregarOfertasCarrossel = async function(apiId, nome, img, raridade) {
+            
+            // Feedback visual (cursor de espera)
+            document.body.style.cursor = 'wait';
+
+            try {
+                // Faz a busca pelo NOME da carta na nossa API
+                const response = await fetch(`/api/market-search?q=${encodeURIComponent(nome)}`);
+                const json = await response.json();
+                const allCards = json.data || [];
+
+                // Filtra apenas as cartas que têm o MESMO card_api_id (versão exata)
+                const ofertas = allCards.filter(c => c.card_api_id === apiId);
+
+                // Se encontrou ofertas (deveria encontrar pelo menos a própria carta do carrossel)
+                if (ofertas.length > 0) {
+                    // Usa a imagem/raridade da primeira oferta ou o fallback
+                    const displayImg = ofertas[0].image_url || img;
+                    const displayRarity = ofertas[0].rarity || raridade;
+                    
+                    renderModal(nome, displayImg, displayRarity, ofertas);
+                } else {
+                    // Fallback caso algo dê errado na busca: mostra só a oferta atual (se tivermos os dados completos)
+                    // Como não temos o ID do vendedor aqui fácil, é melhor alertar
+                    alert("Detalhes de ofertas não encontrados no momento.");
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao carregar ofertas.");
+            } finally {
+                document.body.style.cursor = 'default';
+            }
+        }
+
+        window.fecharModal = () => document.getElementById('cardDetailsModal').style.display = "none";
+        window.onclick = (event) => { if (event.target == document.getElementById('cardDetailsModal')) window.fecharModal(); }
+
+        // 4. Busca
+        async function fetchAndDisplayCards(query, page) {
+            currentQuery = query; currentPage = page;
+            if(resultsContainer) resultsContainer.innerHTML = '<p style="color: white; text-align: center;">Buscando...</p>';
+            if(paginationControls) paginationControls.style.display = 'none';
+            if(showcaseSection) showcaseSection.style.display = 'none';
+
+            try {
+                const response = await fetch(`/api/market-search?q=${encodeURIComponent(query)}&page=${page}`);
+                if (!response.ok) throw new Error('Erro');
+                const json = await response.json();
+                const cards = json.data;
+                lastPage = json.meta ? json.meta.last_page : 1;
+
+                if(resultsContainer) resultsContainer.innerHTML = ''; 
+                searchGroups = {}; 
+
+                if (cards && cards.length > 0) {
+                    
+                    // --- LÓGICA DE AGRUPAMENTO ---
+                    cards.forEach(card => {
+                        const key = card.card_api_id || card.name;
+                        
+                        if (!searchGroups[key]) {
+                            searchGroups[key] = {
+                                name: card.name,
+                                image: card.image_url || card.imageUrl || 'https://via.placeholder.com/245x342',
+                                rarity: card.rarity,
+                                offers: []
+                            };
+                        }
+                        searchGroups[key].offers.push(card);
+                    });
+
+                    // --- RENDERIZAÇÃO DOS GRUPOS ---
+                    Object.keys(searchGroups).forEach(key => {
+                        const group = searchGroups[key];
+                        // Menor preço
+                        const minPrice = Math.min(...group.offers.map(o => parseFloat(String(o.price).replace(',', '.'))));
+                        
+                        const cardDiv = document.createElement('div');
+                        cardDiv.className = 'card'; cardDiv.style.width = '200px'; cardDiv.style.marginBottom = '20px';
+                        
+                        const safeKey = key.replace(/'/g, "\\'");
+                        
+                        cardDiv.innerHTML = `
+                            <img src="${group.image}" alt="${group.name}" style="width: 100%; height: auto; cursor: pointer;" 
+                                 onclick="abrirModalGrupo('${safeKey}')">
+                            
+                            <h3>${group.name}</h3>
+                            <p style="font-size: 0.8rem; color: #ccc;">${group.offers.length} oferta(s)</p>
+                            <p style="font-weight: bold;">A partir de R$ ${minPrice.toFixed(2).replace('.', ',')}</p>
+                            
+                            <div class="card-actions">
+                                <button class="btn-card btn-buy" onclick="abrirModalGrupo('${safeKey}')">Ver Ofertas</button>
+                            </div>`;
+                        resultsContainer.appendChild(cardDiv);
+                    });
+
+                    updatePaginationControls();
+                } else {
+                    if(resultsContainer) resultsContainer.innerHTML = '<p style="color: white; width: 100%; text-align: center;">Nenhum card encontrado.</p>';
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        function updatePaginationControls() {
+            if(!paginationControls) return;
+            pageInfo.textContent = `Página ${currentPage} de ${lastPage}`;
+            paginationControls.style.display = 'block';
+            if(btnPrev) btnPrev.disabled = (currentPage <= 1);
+            if(btnNext) btnNext.disabled = (currentPage >= lastPage);
+        }
+
+        if (searchForm) {
+            searchForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                if (searchInput && searchInput.value.trim()) fetchAndDisplayCards(searchInput.value.trim(), 1);
+            });
+        }
+        if (btnNext) btnNext.addEventListener('click', () => { if (currentPage < lastPage) fetchAndDisplayCards(currentQuery, currentPage + 1); });
+        if (btnPrev) btnPrev.addEventListener('click', () => { if (currentPage > 1) fetchAndDisplayCards(currentQuery, currentPage - 1); });
+    });
+    </script>
     
-    // Pega os NOVOS elementos da paginação
-    const paginationControls = document.getElementById('pagination-controls');
-    const btnPrev = document.getElementById('btn-prev');
-    const btnNext = document.getElementById('btn-next');
-    const pageInfo = document.getElementById('page-info');
-
-    // --- Variáveis de Estado ---
-    // Precisamos "lembrar" a busca atual e a página
-    let currentQuery = '';
-    let currentPage = 1;
-    let totalCount = 0;
-    const pageSize = 20; // O mesmo valor do seu controller!
-
-    /**
-     * Função REUTILIZÁVEL para buscar e mostrar os cards
-     */
-    async function fetchAndDisplayCards(query, page) {
-      // Atualiza o estado
-      currentQuery = query;
-      currentPage = page;
-
-      resultsContainer.innerHTML = 'Buscando...';
-      paginationControls.style.display = 'none'; // Esconde os botões durante a busca
-
-      try {
-        // Chama a SUA API de backend (Adonis) com a PÁGINA
-        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&page=${page}`);
-        
-        if (!response.ok) {
-          throw new Error('Erro ao buscar');
-        }
-
-        const json = await response.json();
-        
-        resultsContainer.innerHTML = ''; // Limpa o "Buscando..."
-
-        if (json.data && json.data.length > 0) {
-          // Salva o total de resultados
-          totalCount = json.totalCount; 
-          
-          json.data.forEach(card => {
-            const img = document.createElement('img');
-            img.src = card.images.small;
-            img.alt = card.name;
-            img.style.width = '150px';
-            resultsContainer.appendChild(img);
-          });
-          
-          // ATUALIZA E MOSTRA OS BOTÕES
-          updatePaginationControls();
-
-        } else {
-          resultsContainer.innerHTML = 'Nenhum card encontrado.';
-        }
-
-      } catch (error) {
-        console.error(error);
-        resultsContainer.innerHTML = 'Falha ao carregar resultados.';
-      }
-    }
-
-    /**
-     * Função para ATUALIZAR os botões de paginação
-     */
-    function updatePaginationControls() {
-      const totalPages = Math.ceil(totalCount / pageSize);
-
-      // Atualiza o texto
-      pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
-      
-      // Mostra os controles
-      paginationControls.style.display = 'block';
-
-      // Lógica dos botões "Anterior" e "Próximo"
-      btnPrev.disabled = (currentPage === 1); // Desativa na página 1
-      btnNext.disabled = (currentPage === totalPages); // Desativa na última página
-    }
-
-    // --- Eventos ---
-
-    // 1. Evento do formulário de busca (Busca sempre a página 1)
-    searchForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const query = searchInput.value.trim();
-      if (query) {
-        fetchAndDisplayCards(query, 1); // Inicia uma nova busca na página 1
-      }
-    });
-
-    // 2. Evento do botão "Próxima"
-    btnNext.addEventListener('click', () => {
-      fetchAndDisplayCards(currentQuery, currentPage + 1);
-    });
-
-    // 3. Evento do botão "Anterior"
-    btnPrev.addEventListener('click', () => {
-      fetchAndDisplayCards(currentQuery, currentPage - 1);
-    });
-
-  </script>
+    @if(flashMessages.has('success'))
+    <script>
+        alert("{{ flashMessages.get('success') }}");
+    </script>
+    @endif
 
 
 </body>
