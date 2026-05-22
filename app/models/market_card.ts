@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import User from '#models/user'
 
 export default class MarketCard extends BaseModel {
   @column({ isPrimary: true })
@@ -21,10 +23,10 @@ export default class MarketCard extends BaseModel {
   declare price: number
 
   @column()
-  declare userName: string
+  declare userName: string | null
 
   @column()
-  declare userEmail: string
+  declare userEmail: string | null
 
   @column()
   declare userId: number
@@ -34,4 +36,8 @@ export default class MarketCard extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  // Relacionamento com User
+  @belongsTo(() => User, { foreignKey: 'userId' })
+  public user?: BelongsTo<typeof User>
 }

@@ -1,5 +1,6 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
+import MarketCard from '#models/market_card'
 
 // ====================================================
 // GRUPO 1: ROTAS PÚBLICAS (Visitantes)
@@ -58,19 +59,45 @@ router.group(() => {
     })
 
     // 2. Rota auxiliar para buscar dados da API (usada pelo JS da página venda)
-    router.get('/api/market/search', [() => import('#controllers/market_cards_controller'), 'searchApi'])
+    router.get('/api/market/search', [() => import('#controllers/market_cards_controller'), 'searchApi'])////
 
     // 3. Rota para SALVAR a venda no banco de dados
     router.post('/vender', [() => import('#controllers/market_cards_controller'), 'store'])
 
-    // --- PERFIL ---
-    router.get('/meuPerfil', async ({ view, auth }) => {
-      const user = auth.getUserOrFail() 
-      return view.render('perfil', { user }) 
-    }).as('perfil')
-
+     // Perfil atualizado
+  router.get('/meuPerfil', async ({ view, auth }) => {
+    const user = await auth.getUserOrFail()
+    const cards = await MarketCard.query().where('userId', user.id)
+    return view.render('perfil', { user, cards })
+  }).as('perfil')
+  
     // Logout
     router.post('/logout', [() => import('#controllers/auth_controller'), 'logout']).as('logout')
+
+    //salvar carta no banco02
+    /*router.post('/vender', async ({ request, response, auth, session }) => {
+      const user = await auth.getUserOrFail()
+
+      const card = new MarketCard()
+      card.cardApiId = request.input('card_api_id')
+      card.name = request.input('card_name')
+      card.imageUrl = request.input('card_image')
+      card.rarity = request.input('card_rarity')
+      card.price = Number(request.input('price'))
+
+      card.userId = user.id
+      card.userName = user.full_name
+      card.userEmail = user.email
+
+      await card.save()
+
+      session.flash('success', 'Carta anunciada com sucesso!')
+      return response.redirect('/meuPerfil')
+    })*/
+
+
+    router.post('/perfil/update', [() => import('#controllers/users_controller'), 'updateProfile'])
+    router.post('/perfil/password', [() => import('#controllers/users_controller'), 'updatePassword'])
     
     // API de Busca Geral (Legado/Topo)
     router.get('/api/search', [() => import('#controllers/card_searches_controller'), 'search'])
